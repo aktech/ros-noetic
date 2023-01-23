@@ -1,0 +1,107 @@
+jobs:
+  stage_0_job_0:
+    name: moveit-ros-manipulation teb-local-planner simulators desktop
+    runs-on: macOS-11
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-manipulation ros-noetic-teb-local-planner
+        ros-noetic-simulators ros-noetic-desktop
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-manipulation ros-noetic-teb-local-planner
+          ros-noetic-simulators ros-noetic-desktop
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx_arm64.sh
+  stage_1_job_1:
+    name: moveit-ros-planning-interface desktop-full
+    runs-on: macOS-11
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_0_job_0
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-planning-interface ros-noetic-desktop-full
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-planning-interface ros-noetic-desktop-full
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx_arm64.sh
+  stage_2_job_2:
+    name: moveit-ros-visualization moveit-commander moveit-planners-chomp
+    runs-on: macOS-11
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_1_job_1
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-visualization ros-noetic-moveit-commander
+        ros-noetic-moveit-planners-chomp
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-visualization ros-noetic-moveit-commander
+          ros-noetic-moveit-planners-chomp
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx_arm64.sh
+  stage_3_job_3:
+    name: moveit-setup-assistant pilz-industrial-motion-planner-testutils moveit-ros
+      pilz-industrial-motion-planner
+    runs-on: macOS-11
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_2_job_2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-setup-assistant ros-noetic-pilz-industrial-motion-planner-testutils
+        ros-noetic-moveit-ros ros-noetic-pilz-industrial-motion-planner
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-setup-assistant ros-noetic-pilz-industrial-motion-planner-testutils
+          ros-noetic-moveit-ros ros-noetic-pilz-industrial-motion-planner
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx_arm64.sh
+  stage_4_job_4:
+    name: moveit-planners moveit
+    runs-on: macOS-11
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_3_job_3
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-planners ros-noetic-moveit
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-planners ros-noetic-moveit
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx_arm64.sh
+name: build_osx
+on:
+  push:
+    branches:
+    - buildbranch_osx_arm64

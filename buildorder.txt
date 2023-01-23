@@ -1,0 +1,15 @@
+ros-noetic-moveit-ros-manipulation
+ros-noetic-teb-local-planner
+ros-noetic-simulators
+ros-noetic-desktop
+ros-noetic-moveit-ros-planning-interface
+ros-noetic-desktop-full
+ros-noetic-moveit-ros-visualization
+ros-noetic-moveit-commander
+ros-noetic-moveit-planners-chomp
+ros-noetic-moveit-setup-assistant
+ros-noetic-pilz-industrial-motion-planner-testutils
+ros-noetic-moveit-ros
+ros-noetic-pilz-industrial-motion-planner
+ros-noetic-moveit-planners
+ros-noetic-moveit
