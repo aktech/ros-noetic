@@ -1,0 +1,323 @@
+jobs:
+  stage_0_job_0:
+    name: moveit-core nav-core rosbridge-server costmap-converter franka-example-controllers
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-core ros-noetic-nav-core ros-noetic-rosbridge-server
+        ros-noetic-costmap-converter ros-noetic-franka-example-controllers
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-core ros-noetic-nav-core ros-noetic-rosbridge-server
+          ros-noetic-costmap-converter ros-noetic-franka-example-controllers
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_0_job_1:
+    name: turtlebot3-slam turtlebot3-example mavros-extras velodyne-simulator turtlebot3-simulations
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-turtlebot3-slam ros-noetic-turtlebot3-example ros-noetic-mavros-extras
+        ros-noetic-velodyne-simulator ros-noetic-turtlebot3-simulations
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-turtlebot3-slam ros-noetic-turtlebot3-example
+          ros-noetic-mavros-extras ros-noetic-velodyne-simulator ros-noetic-turtlebot3-simulations
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_0_job_2:
+    name: tf2-web-republisher slam-toolbox rqt-controller-manager imu-tools geometry2
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-tf2-web-republisher ros-noetic-slam-toolbox ros-noetic-rqt-controller-manager
+        ros-noetic-imu-tools ros-noetic-geometry2
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-tf2-web-republisher ros-noetic-slam-toolbox ros-noetic-rqt-controller-manager
+          ros-noetic-imu-tools ros-noetic-geometry2
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_1_job_3:
+    name: moveit-ros-occupancy-map-monitor base-local-planner navfn clear-costmap-recovery
+      moveit-simple-controller-manager
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_0_job_0
+    - stage_0_job_1
+    - stage_0_job_2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-occupancy-map-monitor ros-noetic-base-local-planner
+        ros-noetic-navfn ros-noetic-clear-costmap-recovery ros-noetic-moveit-simple-controller-manager
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-occupancy-map-monitor ros-noetic-base-local-planner
+          ros-noetic-navfn ros-noetic-clear-costmap-recovery ros-noetic-moveit-simple-controller-manager
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_1_job_4:
+    name: moveit-resources-prbt-ikfast-manipulator-plugin mbf-costmap-core chomp-motion-planner
+      rosbridge-suite franka-gazebo
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_0_job_0
+    - stage_0_job_1
+    - stage_0_job_2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-resources-prbt-ikfast-manipulator-plugin ros-noetic-mbf-costmap-core
+        ros-noetic-chomp-motion-planner ros-noetic-rosbridge-suite ros-noetic-franka-gazebo
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-resources-prbt-ikfast-manipulator-plugin
+          ros-noetic-mbf-costmap-core ros-noetic-chomp-motion-planner ros-noetic-rosbridge-suite
+          ros-noetic-franka-gazebo
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_2_job_5:
+    name: moveit-ros-planning rotate-recovery moveit-ros-control-interface moveit-resources-prbt-moveit-config
+      teb-local-planner
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_1_job_3
+    - stage_1_job_4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-planning ros-noetic-rotate-recovery ros-noetic-moveit-ros-control-interface
+        ros-noetic-moveit-resources-prbt-moveit-config ros-noetic-teb-local-planner
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-planning ros-noetic-rotate-recovery
+          ros-noetic-moveit-ros-control-interface ros-noetic-moveit-resources-prbt-moveit-config
+          ros-noetic-teb-local-planner
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_2_job_6:
+    name: franka-ros
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_1_job_3
+    - stage_1_job_4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-franka-ros
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-franka-ros
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_3_job_7:
+    name: moveit-kinematics moveit-ros-warehouse move-base moveit-ros-robot-interaction
+      moveit-ros-perception
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_2_job_5
+    - stage_2_job_6
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-kinematics ros-noetic-moveit-ros-warehouse ros-noetic-move-base
+        ros-noetic-moveit-ros-robot-interaction ros-noetic-moveit-ros-perception
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-kinematics ros-noetic-moveit-ros-warehouse
+          ros-noetic-move-base ros-noetic-moveit-ros-robot-interaction ros-noetic-moveit-ros-perception
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_3_job_8:
+    name: moveit-fake-controller-manager moveit-planners-ompl moveit-resources-prbt-pg70-support
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_2_job_5
+    - stage_2_job_6
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-fake-controller-manager ros-noetic-moveit-planners-ompl
+        ros-noetic-moveit-resources-prbt-pg70-support
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-fake-controller-manager ros-noetic-moveit-planners-ompl
+          ros-noetic-moveit-resources-prbt-pg70-support
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_4_job_9:
+    name: moveit-ros-move-group moveit-plugins moveit-ros-benchmarks turtlebot3-navigation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_3_job_7
+    - stage_3_job_8
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-move-group ros-noetic-moveit-plugins ros-noetic-moveit-ros-benchmarks
+        ros-noetic-turtlebot3-navigation
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-move-group ros-noetic-moveit-plugins
+          ros-noetic-moveit-ros-benchmarks ros-noetic-turtlebot3-navigation
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_5_job_10:
+    name: moveit-ros-manipulation turtlebot3 moveit-ros-planning-interface
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_4_job_9
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-manipulation ros-noetic-turtlebot3 ros-noetic-moveit-ros-planning-interface
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-manipulation ros-noetic-turtlebot3
+          ros-noetic-moveit-ros-planning-interface
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_6_job_11:
+    name: moveit-ros-visualization moveit-commander moveit-planners-chomp
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_5_job_10
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-ros-visualization ros-noetic-moveit-commander
+        ros-noetic-moveit-planners-chomp
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-ros-visualization ros-noetic-moveit-commander
+          ros-noetic-moveit-planners-chomp
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_7_job_12:
+    name: moveit-setup-assistant pilz-industrial-motion-planner-testutils moveit-ros
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_6_job_11
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-moveit-setup-assistant ros-noetic-pilz-industrial-motion-planner-testutils
+        ros-noetic-moveit-ros
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-moveit-setup-assistant ros-noetic-pilz-industrial-motion-planner-testutils
+          ros-noetic-moveit-ros
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+  stage_8_job_13:
+    name: pilz-industrial-motion-planner panda-moveit-config moveit-planners moveit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_7_job_12
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build ros-noetic-pilz-industrial-motion-planner ros-noetic-panda-moveit-config
+        ros-noetic-moveit-planners ros-noetic-moveit
+      env:
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        CURRENT_RECIPES: ros-noetic-pilz-industrial-motion-planner ros-noetic-panda-moveit-config
+          ros-noetic-moveit-planners ros-noetic-moveit
+        DOCKER_IMAGE: condaforge/linux-anvil-cos7-x86_64
+      run: |
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/run_docker_build.sh
+name: build_linux
+on:
+  push:
+    branches:
+    - buildbranch_linux
